@@ -228,6 +228,24 @@ For a systematic test, begin with the local gateway, then test another VLAN in t
 - **Web or FTP access fails:** Confirm the server is in VLAN 80, has a valid gateway, and has the relevant Packet Tracer service enabled.
 - **Only some devices fail:** Check the specific access-port VLAN and cable/link status before changing routing.
 
+## Critical Evaluation of the Network Design
+
+### Performance
+
+The architecture follows a hierarchical campus design, with a multilayer Layer 3 switch at the main campus providing inter-VLAN routing close to the access networks. This reduces the need to send local department traffic through the WAN router and supports efficient forwarding within the campus. RIPv2 provides automatic route exchange across the WAN, which is suitable for this teaching and simulation environment. However, RIPv2 has slower convergence and a smaller routing metric limit than link-state protocols such as OSPF, so it would be less suitable as the university network grows substantially.
+
+### Scalability
+
+VLAN segmentation isolates departmental broadcast domains and allows Buildings A, B, and C to be expanded independently. The structured `/24` allocation gives each department ample address space for additional workstations, printers, and other endpoints. The consistent VLAN and gateway scheme also makes it straightforward to add new access ports or departments. As the network grows, the flat `/24` allocation should be reviewed so that address space is not wasted and route summarization remains practical.
+
+### Reliability
+
+The design provides dedicated WAN connectivity between the main and branch campuses and a separate path toward the external cloud email service. These links separate major network functions and allow the sites to exchange routes dynamically. The current topology nevertheless contains single points of failure at the main campus multilayer switch and primary router. A failure of either device could interrupt connectivity for a large portion of the university. Future iterations should introduce redundant core hardware, alternative WAN paths, and Hot Standby Router Protocol (HSRP) or an equivalent first-hop redundancy mechanism.
+
+### Security
+
+VLANs logically separate sensitive administrative traffic, including Administration and HR on VLANs 10 and 20, from student laboratory traffic on VLANs 70 and 100. This segmentation limits broadcast exposure, but VLAN separation alone does not enforce access control between routed networks. Access Control Lists (ACLs) should therefore be deployed on the routing devices to restrict student access to Finance, HR, Administration, IT, and server subnets while allowing only the services that students require. Additional protections such as SSH administration, switch port security, unused-port shutdown, and service-specific firewall policies would strengthen the design.
+
 ## Opening the Project
 
 1. Install [Cisco Packet Tracer](https://www.netacad.com/courses/packet-tracer).
